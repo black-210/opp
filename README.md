@@ -1,89 +1,75 @@
 # OOP
 
-OOP is a small Rust command-line experiment that combines a placeholder LibAFL
-setup with `probe-rs` calls for an nRF52840 development board. It is not a
-complete fuzzer, firmware analyzer, or secret scanner.
+OOP is an experimental Rust project containing preliminary nRF52840 debug-probe
+and software-defined radio (SDR) code. It is not currently a working command-line
+tool, fuzzer, firmware scanner, or complete radio application.
 
-## What it does
+## What runs today
 
-When started, the program reads one line from standard input and handles one of
-these commands:
+The program's `main()` calls `limon_hack_original()` directly. That function
+tries to attach to an nRF52840, access core 0, and print its status. If the
+connection, core access, or status read fails, it prints an error and returns.
+After a successful status read, it also returns immediately. The code below
+that return is unreachable.
 
-| Command | Immediate response |
-| --- | --- |
-| `start` | Prints messages saying the fuzzer started. It does not start a fuzzing loop. |
-| `stop` | Prints a stopping message. There is no running process to stop. |
-| `launch` | Prints a launch message, initializes the placeholder LibAFL object, and calls the board-related routine. |
-| `main` | Prints a message and initializes the placeholder LibAFL object. |
-| Anything else | Prints `Unknown command`. |
+The program does not currently call the interactive `cli()` function. Running
+it does not prompt for commands or start SDR operations.
 
-After handling that command, `main` unconditionally initializes the LibAFL
-object and calls the board-related routine. As a result, `main_paylode()` runs
-twice for `main` and `launch`; the board routine also runs a second time for
-`launch`. The `start`, `stop`, and unknown-command paths still reach these
-unconditional calls.
+## Source features
 
-### LibAFL placeholder
+The following routines exist in `src/main.rs`, but they are not connected to
+the current entry point:
 
-`main_paylode()` creates a `StdFuzzer` using the numbers `0x9000` and `0x900`,
-enables shared objectives, and accesses the objective fields. It does not
-configure a target, executor, corpus, mutator, or fuzzing loop, so it does not
-perform fuzzing.
+| Routine | Intended behavior | Current status |
+| --- | --- | --- |
+| `cli()` | Reads one line and dispatches command text. | Not called by `main()`. Its wildcard match arm comes before the `tx` and `rx` arms, making those later arms unreachable even if `cli()` is called. |
+| `limon_hack()` | Attaches to an nRF52840 and reads core 0 status. | Defined but not called by `main()`. |
+| `lain_hack_ain_bin_rf()` | Receives SDR samples and computes basic power and FFT-based signal measurements, then prints heuristic messages. | Defined but not reachable through the current program flow. Requires a compatible SoapySDR setup and receiver. |
+| `sdr_match()` | Parses a frequency and expression, generates complex samples, and sends them through an SDR transmit stream. | Defined but not reachable through the current program flow. It can transmit RF when connected and invoked; do not use it except with authorized equipment, within applicable regulations, and in a controlled environment. |
+| `limon_hack_original()` | Attempts an nRF52840 debug-probe connection and reads core status. | Called by `main()`. It returns after the status check, so the remaining code in the function is not executed. |
 
-### nRF52840 / debug-probe routine
+The CLI also contains `start`, `stop`, `launch`, and `main` branches, but they
+are not usable through the current entry point. The `start` and `stop` branches
+only print messages; they do not control a fuzzer or background process.
 
-`limon_hack()`:
+Although `libafl` is listed as a dependency, the current source does not set up
+a fuzzing target, executor, corpus, mutator, or fuzzing loop. Likewise, the
+source does not currently read firmware memory or scan a device for secrets.
+The `SECRET_KEY` check is in the unreachable portion of
+`limon_hack_original()` and examines only a locally generated string.
 
-1. Converts a fixed four-byte array to a vector.
-2. Checks for an attached debug probe. If none is found, it prints a message
-   and returns.
-3. Attempts to auto-attach to an nRF52840 and check core 0.
-4. Builds a string from a hard-coded UTF-16 array and checks it for the literal
-   `SECRET_KEY`.
-5. Attempts another probe attach and obtains core 0.
-6. Prepares register values and checks whether the hard-coded UTF-16 array is
-   sorted. The provided array is not sorted, so the inner block containing the
-   `write_mem_64bit` call is not reached with the current data.
+## Requirements and build notes
 
-The `SECRET_KEY` check only examines the generated local string; the code does
-not read firmware memory or search a device for secrets. The fixed UTF-16 data
-does not contain `SECRET_KEY`, so that condition is false. Several pointer,
-conversion, and register calculations have no observable effect.
+- Rust toolchain with edition 2024 support.
+- SoapySDR installed and discoverable by the `soapysdr` crate to build the SDR
+  dependency.
+- A compatible debug probe and nRF52840 to exercise the active `main()` path.
+- Compatible SDR hardware and drivers are needed only if the dormant SDR
+  routines are later connected and used.
 
-The routine may still fail when a probe is present but the nRF52840 cannot be
-attached: it uses `expect` for some connection results. Only run it with
-hardware you own or are authorized to debug.
-
-## Requirements
-
-- Rust toolchain supporting edition 2024
-- A compatible debug probe and nRF52840 only if exercising the hardware path
-
-The manifest also lists `dudect-bencher`, `ndarray`, and `subtle`; the current
-`src/main.rs` does not use them.
+The current source references `meval` in `sdr_match()`, but `meval` is not
+listed in `Cargo.toml`. A build may therefore fail at compilation after native
+dependencies are available. The project has not yet been validated as a
+working application.
 
 ## Build and run
 
 ```powershell
-cargo build
+cargo check
 cargo run
 ```
 
-The program accepts one command on standard input. For example:
+`cargo run` attempts the nRF52840 connection immediately; it does not start an
+interactive menu. Without the expected probe and target, the routine reports a
+connection error and exits.
 
-```powershell
-"launch" | cargo run
-```
+## Limitations
 
-Without a debug probe, the hardware routine reports that it is skipping the
-nRF52840 operations. With a probe, attachment may fail if the target or probe
-is unavailable or incompatible.
-
-## Current limitations
-
-- The start/stop messages do not control a background fuzzer.
-- No fuzzing campaign or target is configured.
-- The secret check uses a fixed local string, not device memory.
-- Most calculated values are unused.
-- The CLI command does not prevent the unconditional calls at the end of
-  `main()`.
+- The interactive CLI and SDR routines are not wired into the entry point.
+- The `tx` and `rx` command arms follow a catch-all match arm and are unreachable.
+- The SDR receive analysis is preliminary and does not provide a validated
+  classification or monitoring result.
+- The transmit routine is experimental and has no safeguards for frequency,
+  power, or regulatory compliance.
+- No fuzzing campaign, firmware-memory scan, or device secret scan is
+  implemented.
