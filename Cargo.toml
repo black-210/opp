@@ -5,7 +5,11 @@ edition = "2024"
 
 [dependencies]
 dudect-bencher = "0.7.0"
+futuredsp = "0.10.0"
 libafl = "0.16.1"
 ndarray = "0.17.2"
+num-complex = "0.4.6"
 probe-rs = "0.32.0"
+rustfft = "6.4.1"
+soapysdr = "0.5.1"
 subtle = "2.6.1"

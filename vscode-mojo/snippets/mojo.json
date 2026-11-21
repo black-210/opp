@@ -1,0 +1,42 @@
+{
+  "Main function": {
+    "prefix": ["main", "fnmain"],
+    "body": ["fn main():", "\t${1:print(\"Hello, Mojo!\")}"],
+    "description": "Create a Mojo main function"
+  },
+  "Function": {
+    "prefix": "fn",
+    "body": ["fn ${1:name}(${2:args}) -> ${3:None}:", "\t${0:pass}"],
+    "description": "Create a Mojo function"
+  },
+  "Struct": {
+    "prefix": "struct",
+    "body": ["struct ${1:Name}:", "\tvar ${2:value}: ${3:Int}", "", "\tfn __init__(inout self, ${2:value}: ${3:Int}):", "\t\tself.${2:value} = ${2:value}", "", "\t${0}"],
+    "description": "Create a Mojo struct"
+  },
+  "Trait": {
+    "prefix": "trait",
+    "body": ["trait ${1:Name}:", "\tfn ${2:method}(self):", "\t\t${0}"],
+    "description": "Create a Mojo trait"
+  },
+  "For range": {
+    "prefix": "forrange",
+    "body": ["for ${1:i} in range(${2:10}):", "\t${0:print(i)}"],
+    "description": "Loop over a range"
+  },
+  "If else": {
+    "prefix": "ifelse",
+    "body": ["if ${1:condition}:", "\t${2:pass}", "else:", "\t${0:pass}"],
+    "description": "Create an if/else block"
+  },
+  "Python import": {
+    "prefix": "pyimport",
+    "body": ["from python import Python", "", "let py = Python.import_module(\"${1:module}\")", "${0}"],
+    "description": "Import and use a Python module"
+  },
+  "SIMD": {
+    "prefix": "simd",
+    "body": ["let ${1:x} = SIMD[DType.${2:float32}, ${3:4}](${4:0})", "${0}"],
+    "description": "Create a SIMD value"
+  }
+}

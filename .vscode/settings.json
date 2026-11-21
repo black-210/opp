@@ -1,0 +1,34 @@
+{
+  "files.associations": {
+    "*.mojo": "mojo",
+    "*.🔥": "mojo"
+  },
+  "mojo.executable": "mojo",
+  "editor.formatOnSave": false,
+  "[mojo]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false
+  },
+  "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.check.command": "check",
+  "rust-analyzer.linkedProjects": [
+    "cyber-rust/Cargo.toml"
+  ],
+  "rust-analyzer.check.overrideCommand": [
+    "cargo",
+    "check",
+    "--manifest-path",
+    "C:\\Users\\asus\\Downloads\\oop\\cyber-rust\\Cargo.toml",
+    "--message-format=json"
+  ],
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.rustfmt.extraArgs": [
+    "--edition",
+    "2021"
+  ],
+  "[rust]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  }
+}

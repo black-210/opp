@@ -1,0 +1,74 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmLanguage.schema.json",
+  "name": "Mojo",
+  "scopeName": "source.mojo",
+  "patterns": [
+    {"include": "#comments"},
+    {"include": "#strings"},
+    {"include": "#decorators"},
+    {"include": "#keywords"},
+    {"include": "#types"},
+    {"include": "#builtins"},
+    {"include": "#numbers"},
+    {"include": "#operators"},
+    {"include": "#functions"}
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {"name": "comment.line.number-sign.mojo", "match": "#.*$"},
+        {"name": "comment.block.documentation.mojo", "begin": "\"\"\"", "end": "\"\"\"", "patterns": [{"name": "constant.character.escape.mojo", "match": "\\\\."}]}
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {"name": "string.quoted.triple.mojo", "begin": "(?<!\")(\"\"\")", "end": "\\1", "patterns": [{"name": "constant.character.escape.mojo", "match": "\\\\."}]},
+        {"name": "string.quoted.double.mojo", "begin": "\"", "end": "\"", "patterns": [{"name": "constant.character.escape.mojo", "match": "\\\\(?:.|$)"}]},
+        {"name": "string.quoted.single.mojo", "begin": "'", "end": "'", "patterns": [{"name": "constant.character.escape.mojo", "match": "\\\\(?:.|$)"}]}
+      ]
+    },
+    "decorators": {
+      "patterns": [
+        {"name": "entity.name.function.decorator.mojo", "match": "@[A-Za-z_]\\w*"}
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {"name": "keyword.control.mojo", "match": "\\b(if|elif|else|for|while|break|continue|return|raise|try|except|finally|with|match|case|defer|yield)\\b"},
+        {"name": "keyword.declaration.mojo", "match": "\\b(fn|def|struct|trait|class|alias|var|let|ref|inout|owned|borrowed|mut|comptime)\\b"},
+        {"name": "keyword.operator.mojo", "match": "\\b(as|from|import|in|is|not|and|or|where|package)\\b"},
+        {"name": "constant.language.mojo", "match": "\\b(True|False|None|Self|__init__|__new__|__del__)\\b"}
+      ]
+    },
+    "types": {
+      "patterns": [
+        {"name": "storage.type.builtin.mojo", "match": "\\b(Bool|Int|UInt|UInt8|UInt16|UInt32|UInt64|Int8|Int16|Int32|Int64|Float16|Float32|Float64|BFloat16|String|StringLiteral|Error|List|Dict|Set|Tuple|Optional|AnyType|SIMD|DType)\\b"},
+        {"name": "entity.name.type.mojo", "match": "\\b[A-Z][A-Za-z0-9_]*\\b"}
+      ]
+    },
+    "builtins": {
+      "patterns": [
+        {"name": "support.function.builtin.mojo", "match": "\\b(print|len|range|enumerate|zip|rebind|constrained|assert|abort|address_of|alloca|pointer|parallelize|vectorize|cos|sin|sqrt|min|max|abs)\\b"}
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {"name": "constant.numeric.hex.mojo", "match": "\\b0[xX][0-9A-Fa-f](?:_?[0-9A-Fa-f])*\\b"},
+        {"name": "constant.numeric.binary.mojo", "match": "\\b0[bB][01](?:_?[01])*\\b"},
+        {"name": "constant.numeric.octal.mojo", "match": "\\b0[oO][0-7](?:_?[0-7])*\\b"},
+        {"name": "constant.numeric.float.mojo", "match": "(?<!\\w)(?:\\d(?:_?\\d)*\\.\\d(?:_?\\d)*(?:[eE][+-]?\\d(?:_?\\d)*)?|\\.\\d(?:_?\\d)*(?:[eE][+-]?\\d(?:_?\\d)*)?|\\d(?:_?\\d)*[eE][+-]?\\d(?:_?\\d)*)(?!\\w)"},
+        {"name": "constant.numeric.integer.mojo", "match": "\\b\\d(?:_?\\d)*\\b"}
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {"name": "keyword.operator.mojo", "match": "(->|:=|\\+=|-=|\\*=|/=|%=|<<=|>>=|&=|\\|=|\\^=|==|!=|<=|>=|<<|>>|&&|\\|\\||\\*\\*|\\^|~|:|\\?|@|\\+|-|\\*|/|%|<|>|=|&|\\|)"}
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {"name": "entity.name.function.mojo", "match": "\\b([A-Za-z_]\\w*)(?=\\s*\\()"}
+      ]
+    }
+  }
+}

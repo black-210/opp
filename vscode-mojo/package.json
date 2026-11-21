@@ -1,0 +1,62 @@
+{
+  "name": "mojo-language",
+  "displayName": "Mojo Language",
+  "description": "Complete local Mojo syntax highlighting, snippets, editor settings, and run support.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:mojo"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mojo",
+        "aliases": [
+          "Mojo",
+          "mojo"
+        ],
+        "extensions": [
+          ".mojo",
+          ".🔥"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mojo",
+        "scopeName": "source.mojo",
+        "path": "./syntaxes/mojo.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "mojo",
+        "path": "./snippets/mojo.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "mojo.runFile",
+        "title": "Mojo: Run Current File"
+      }
+    ],
+    "configuration": {
+      "title": "Mojo",
+      "properties": {
+        "mojo.executable": {
+          "type": "string",
+          "default": "mojo",
+          "description": "Mojo executable or full path."
+        }
+      }
+    }
+  }
+}
